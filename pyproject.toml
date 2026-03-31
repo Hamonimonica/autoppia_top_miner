@@ -1,0 +1,53 @@
+[project]
+name = "autoppia-miner"
+version = "0.1.0"
+description = "Bittensor Subnet 36 (Autoppia) web automation agent miner"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "fastapi==0.110.3",
+    "uvicorn[standard]==0.37.0",
+    "httpx==0.28.1",
+    "openai==2.16.0",
+    "pydantic==2.12.5",
+    "beautifulsoup4==4.12.3",
+    "lxml==6.0.2",
+    "orjson==3.11.7",
+    "tenacity==9.1.2",
+    "python-dateutil==2.9.0.post0",
+    "rich==14.3.2",
+    "loguru==0.7.3",
+    "jsonschema==4.26.0",
+    "requests==2.32.5",
+    "aiohttp==3.13.3",
+    "tldextract==5.3.1",
+    "markdownify==1.2.2",
+    "readability-lxml==0.8.4.1",
+    "rapidfuzz==3.14.3",
+    "pypdf==6.7.5",
+    "python-docx==1.2.0",
+    "pillow==12.1.1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24",
+    "httpx>=0.27",
+    "ruff>=0.8",
+]
+
+[tool.pytest.ini_options]
+markers = [
+    "unit: Unit tests (no external dependencies)",
+    "integration: Integration tests (may require Docker)",
+    "requires_docker: Tests that need Docker daemon running",
+]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/autoppia_miner"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
