@@ -7,11 +7,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
     HOME=/tmp
 
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
 COPY . .
 
-RUN pip install --no-cache-dir .
-
-# Run as non-root (matching sandbox behavior)
 RUN adduser --disabled-password --gecos '' --uid 10001 app && \
     mkdir -p /app/logs && \
     chown -R app:app /app

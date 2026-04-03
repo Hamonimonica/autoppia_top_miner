@@ -1,19 +1,38 @@
-"""Entrypoint for ``uvicorn main:app`` (backwards-compatible)."""
-
+"""SN36 Apex Agent - FastAPI entry point."""
 from __future__ import annotations
+import logging
+from typing import Any
 
-import sys
-from pathlib import Path
+from fastapi import FastAPI, Body
 
-# Repo checkout: package lives under ``src/``; ensure it is importable even when
-# the editable install is missing or a different ``VIRTUAL_ENV`` is active.
-_root = Path(__file__).resolve().parent
-_src = _root / "src"
-if _src.is_dir():
-    src_str = str(_src)
-    if src_str not in sys.path:
-        sys.path.insert(0, src_str)
+from agent import handle_act
 
-from autoppia_miner.web.app import app  # noqa: E402
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
 
-__all__ = ["app"]
+app = FastAPI(title="SN36 Apex Agent", version="2.0")
+
+
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
+
+@app.post("/act")
+async def act(payload: dict[str, Any] = Body(...)):
+    actions = await handle_act(
+        task_id=payload.get("task_id"),
+        prompt=payload.get("prompt") or payload.get("task_prompt"),
+        url=payload.get("url"),
+        snapshot_html=payload.get("snapshot_html"),
+        screenshot=payload.get("screenshot"),
+        step_index=payload.get("step_index"),
+        web_project_id=payload.get("web_project_id"),
+        history=payload.get("history"),
+        relevant_data=payload.get("relevant_data") if isinstance(payload.get("relevant_data"), dict) else None,
+    )
+    return {"actions": actions}
+
+
+@app.post("/step")
+async def step(payload: dict[str, Any] = Body(...)):
+    return await act(payload)
